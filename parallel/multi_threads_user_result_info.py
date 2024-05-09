@@ -25,7 +25,7 @@ def send_request(url):
         end_time = time.time()
         processing_time = end_time - start_time
         logging.info(f"Request to {url} processed in {processing_time:.2f} seconds")
-        # 模拟延迟
+        # 返回URL作为结果
         return url
 
 # 要发送的请求列表
@@ -34,7 +34,7 @@ urls = [
 ]
 
 # 创建进度条
-progress_bar = tqdm(total=len(urls), desc="Sending requests", unit="request")
+progress_bar = tqdm(total=len(urls), unit="request")
 
 # 创建线程池
 with ThreadPoolExecutor(max_workers=50) as executor:
@@ -43,7 +43,8 @@ with ThreadPoolExecutor(max_workers=50) as executor:
 
     # 使用as_completed迭代Future对象，并更新进度条
     for future in as_completed(futures):
-        future.result()
+        url = future.result()  # 获取函数的返回值，即URL
+        progress_bar.set_description(f"Sending request to {url}")  # 更新进度条的描述
         progress_bar.update(1)
 
 # 关闭进度条
