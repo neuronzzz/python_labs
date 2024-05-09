@@ -2,17 +2,12 @@ from loguru import logger
 
 
 class CustomLogger:
-    def __init__(self, **kwargs):
+    def __init__(self, log_file=None):
         self.logger = logger
-        log_file = kwargs.get('log_file', None)
-        log_to_file = kwargs.get('log_to_file', True)
-        log_to_console = kwargs.get('log_to_console', True)
 
-        if log_to_file and log_file:
+        if log_file:
             self.logger.add(log_file, rotation="00:00", retention="7 days", level="DEBUG",
                             format="{time} - {name} - {level} - {message}")
-        if log_to_console:
-            self.logger.add(lambda msg: print(msg), level="DEBUG", format="{time} - {name} - {level} - {message}")
 
     def __getattr__(self, name):
         return getattr(self.logger, name)
