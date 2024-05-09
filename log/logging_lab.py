@@ -1,25 +1,24 @@
 import logging
 
-# 创建 logger
-logger = logging.getLogger('example_logger')
-logger.setLevel(logging.DEBUG)
 
-# 创建 FileHandler，并设置 mode 参数为 'w'
-file_handler = logging.FileHandler('example.log', mode='w')
-file_handler.setLevel(logging.DEBUG)
+class Logger:
+    def __init__(self, log_file):
+        self.logger = logging.getLogger(__name__)  # 使用当前模块的名称作为 logger 的名称
+        self.logger.setLevel(logging.INFO)  # 设置默认的日志级别为 INFO
 
-# 创建格式化器
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler = logging.FileHandler(log_file, mode='w')
+        file_handler.setLevel(logging.DEBUG)
 
-# 将格式化器添加到处理器
-file_handler.setFormatter(formatter)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
 
-# 将处理器添加到 logger
-logger.addHandler(file_handler)
+        self.logger.addHandler(file_handler)
 
-# 输出日志消息
-logger.debug('This is a debug message')
-logger.info('This is an info message')
-logger.warning('This is a warning message')
-logger.error('This is an error message')
-logger.critical('This is a critical message')
+    def log_message(self, message):
+        self.logger.info(message)
+
+
+# Example usage:
+if __name__ == "__main__":
+    logger = Logger('example.log')
+    logger.log_message('This is an info message')  # 这条消息会被记录
