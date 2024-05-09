@@ -1,35 +1,35 @@
 import logging
 
-
 class CustomLogger:
-    def __init__(self, log_file, logger_name=__name__):
-        self._logger = logging.getLogger(logger_name)
-        self._logger.setLevel(logging.DEBUG)  # 设置默认的日志级别为 DEBUG
+    def __init__(self, **kwargs):
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)  # 设置日志级别为DEBUG
 
-        # 添加文件处理器
-        file_handler = logging.FileHandler(log_file, mode='w')
-        file_handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('{asctime} - {name} - {levelname} - {message}', style='{')  # 设置日志格式
 
-        # 添加控制台处理器
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
+        log_file = kwargs.get('log_file', None)
+        log_to_file = kwargs.get('log_to_file', True)
+        log_to_console = kwargs.get('log_to_console', True)
 
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(formatter)
-        console_handler.setFormatter(formatter)
+        if log_to_file and log_file:
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setLevel(logging.DEBUG)
+            file_handler.setFormatter(formatter)
+            self.logger.addHandler(file_handler)
 
-        self._logger.addHandler(file_handler)
-        self._logger.addHandler(console_handler)
+        if log_to_console:
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.DEBUG)
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
 
     def __getattr__(self, attr):
-        """
-        Forward all other attribute lookups to the logger object.
-        """
-        return getattr(self._logger, attr)
+        return getattr(self.logger, attr)
 
-
-# Example usage:
-if __name__ == "__main__":
-    logger = CustomLogger('example.log')
-    logger.info('This is an info message')  # 这条消息会被记录到文件和控制台
-    logger.debug('This is a debug message')  # 这条消息也会被记录到文件和控制台
+# 使用示例
+my_logger = CustomLogger(log_file="app.log")
+my_logger.debug("This is a debug message")
+my_logger.info("This is an info message")
+my_logger.warning("This is a warning message")
+my_logger.error("This is an error message")
+my_logger.critical("This is a critical message")
